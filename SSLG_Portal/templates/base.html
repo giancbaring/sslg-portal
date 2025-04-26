@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSLG Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>📘 SSLG Portal Beta</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">🏠 Home</a>
+            {% if session.get('user') %}
+                <a href="{{ url_for('dashboard') }}">🏁 Dashboard</a>
+                <a href="{{ url_for('announcements') }}">📣 Announcements</a>
+                <a href="{{ url_for('upload') }}">📤 Upload</a>
+                <a href="{{ url_for('files') }}">📂 Files</a>
+                <a href="{{ url_for('suggest') }}">📬 Suggestion Box</a>
+                {% if session['user'] == 'admin' %}
+		<a href="{{ url_for('view_votes') }}">📊 View Votes</a>
+		<a href="{{ url_for('add_candidates') }}">➕ Add Candidates</a>
+                    <a href="{{ url_for('suggestions') }}">🗂️ View Suggestions</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}">🔓 Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">🔐 Login</a>
+                <a href="{{ url_for('register') }}">📝 Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>SSLG Portal © 2025 - Powered by Flask</p>
+    </footer>
+</body>
+</html>

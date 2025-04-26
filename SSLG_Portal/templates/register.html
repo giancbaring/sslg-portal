@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card register-card">
+  <h2 class="form-title">Register for SSLG Portal</h2>
+
+  <form method="post" onsubmit="return validateForm()">
+    <label for="username">Username *</label>
+    <input type="text" name="username" id="username" required placeholder="e.g. juan123" onblur="checkUsername()">
+    <small id="username-status" class="feedback"></small>
+
+    <label for="password">Password *</label>
+    <input type="password" name="password" id="password" required minlength="6" placeholder="At least 6 characters" oninput="checkStrength()">
+    <small id="password-strength" class="feedback"></small>
+
+    <label for="confirm">Confirm Password *</label>
+    <input type="password" name="confirm" id="confirm" required placeholder="Re-enter password">
+
+    <label for="name">Full Name *</label>
+    <input type="text" name="name" required>
+
+    <label for="age">Age *</label>
+    <input type="number" name="age" required min="7" max="99">
+
+    <label for="birthday">Birthday *</label>
+    <input type="date" name="birthday" required>
+
+    <label for="education">Educational Level *</label>
+    <select name="education" id="education" required onchange="toggleFields()">
+      <option value="">-- Select --</option>
+      <option value="jhs">Junior High School (Grades 7-10)</option>
+      <option value="shs">Senior High School (Grades 11-12)</option>
+      <option value="alumni">Alumni</option>
+    </select>
+
+    <div id="grade_section">
+      <label for="grade">Grade *</label>
+      <input type="text" name="grade" placeholder="e.g. 10">
+
+      <label for="section">Section *</label>
+      <input type="text" name="section" placeholder="e.g. St. Peter">
+    </div>
+
+    <div id="batch" style="display:none;">
+      <label for="batch">Alumni Batch *</label>
+      <input type="text" name="batch" placeholder="e.g. 2020">
+    </div>
+
+    <label for="role">Your Role *</label>
+    <select name="role" required>
+      <option value="">-- Select Role --</option>
+      <option value="student">Student</option>
+      <option value="officer">SSLG Officer / Adviser</option>
+      <option value="lgcea">LG COMEA Member</option>
+      <option value="faculty">Faculty</option>
+      <option value="admin">School Admin</option>
+      <option value="alumni">Alumni</option>
+    </select>
+
+    <label for="email">Email (optional)</label>
+    <input type="email" name="email" placeholder="e.g. your@email.com">
+
+    <button type="submit" class="btn-submit">Register</button>
+  </form>
+
+  <p class="form-footer">
+    Already have an account? <a href="{{ url_for('login') }}">Login here</a>.
+  </p>
+</div>
+
+<script>
+function toggleFields() {
+  const level = document.getElementById("education").value;
+  document.getElementById("grade_section").style.display = (level === "alumni") ? "none" : "block";
+  document.getElementById("batch").style.display = (level === "alumni") ? "block" : "none";
+}
+
+function checkUsername() {
+  const username = document.getElementById("username").value.trim();
+  if (!username) return;
+
+  fetch('/check_username?username=' + username)
+    .then(response => response.json())
+    .then(data => {
+      const status = document.getElementById("username-status");
+      if (data.available) {
+        status.innerText = "Username is available";
+        status.style.color = "green";
+      } else {
+        status.innerText = "Username already taken";
+        status.style.color = "red";
+      }
+    });
+}
+
+function checkStrength() {
+  const password = document.getElementById("password").value;
+  const strength = document.getElementById("password-strength");
+
+  if (password.length < 6) {
+    strength.innerText = "Weak";
+    strength.style.color = "red";
+  } else if (password.match(/[A-Z]/) && password.match(/[0-9]/) && password.length >= 8) {
+    strength.innerText = "Strong";
+    strength.style.color = "green";
+  } else {
+    strength.innerText = "Moderate";
+    strength.style.color = "orange";
+  }
+}
+
+function validateForm() {
+  const pass = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  if (pass !== confirm) {
+    alert("Passwords do not match!");
+    return false;
+  }
+  return true;
+}
+</script>
+{% endblock %}
